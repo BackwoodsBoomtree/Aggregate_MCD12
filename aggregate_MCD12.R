@@ -3,8 +3,8 @@ library(terra)
 
 lc_input   <- "G:/MCD12Q1/combined/MCD12Q1.061.2021.nc"
 tower_csv  <- "C:/Russell/Git/R_personal/Aggregate_MCD12/location_fluxnet.csv"
-csv_out    <- "C:/Russell/Git/R_personal/Aggregate_MCD12/fluxnet_tower_lc_0.5.csv"
-sample_res <- 120 # In number of gridcells in each direction
+csv_out    <- "C:/Russell/Git/R_personal/Aggregate_MCD12/fluxnet_tower_lc_0.05.csv"
+sample_res <- 12 # In number of gridcells in each direction
 
 # Import Data
 lc_sin       <- rast(lc_input)
@@ -13,8 +13,8 @@ df_tower <- read.csv(tower_csv, header = TRUE, sep = ",")
 vect_tower <- vect(df_tower, geom=c("lon", "lat"), crs = "EPSG:4326", keepgeom = FALSE)
 vect_tower <- project(vect_tower, lc_sin)
 
-plot(lc_sin)
-plot(vect_tower, add = TRUE)
+# plot(lc_sin)
+# plot(vect_tower, add = TRUE)
 
 # Fill NAs with water (missing tiles over ocean)
 lc_sin[is.na(lc_sin)] <- 17
