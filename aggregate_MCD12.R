@@ -2,12 +2,12 @@
 library(terra)
 
 lc_input   <- "G:/MCD12Q1/combined/MCD12Q1.061.2021.nc"
-tower_csv  <- "C:/Russell/Git/R_personal/Aggregate_MCD12/location_fluxnet.csv"
-csv_out    <- "C:/Russell/Git/R_personal/Aggregate_MCD12/fluxnet_tower_lc_0.05.csv"
-sample_res <- 12 # In number of gridcells in each direction
+tower_csv  <- "C:/Russell/Git/R_personal/Aggregate_MCD12/tower_sites_2023_03_11.csv"
+csv_out    <- "C:/Russell/Git/R_personal/Aggregate_MCD12/fluxnet_tower_lc_1.0.csv"
+sample_res <- 240 # In number of gridcells in each direction
 
 # Import Data
-lc_sin       <- rast(lc_input)
+lc_sin   <- rast(lc_input)
 df_tower <- read.csv(tower_csv, header = TRUE, sep = ",")
 
 vect_tower <- vect(df_tower, geom=c("lon", "lat"), crs = "EPSG:4326", keepgeom = FALSE)
@@ -17,29 +17,30 @@ vect_tower <- project(vect_tower, lc_sin)
 # plot(vect_tower, add = TRUE)
 
 # Fill NAs with water (missing tiles over ocean)
-lc_sin[is.na(lc_sin)] <- 17
+m      <- matrix(c(NA, 17), ncol = 2, byrow = TRUE)
+lc_sin <- classify(lc_sin, m)
 
-ext_lc                   <- extract(lc_sin, vect_tower)
-df_tower$LC_MCD12Q1_2021 <- ext_lc[,2]
+ext_lc              <- extract(lc_sin, vect_tower)
+df_tower$LC_MCD12Q1 <- ext_lc[,2]
 
 # Replace
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 1]  <- "ENF"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 2]  <- "EBF"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 3]  <- "DNF"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 4]  <- "DBF"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 5]  <- "MF"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 6]  <- "CSH"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 7]  <- "OSH"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 8]  <- "WSA"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 9]  <- "SAV"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 10] <- "GRA"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 11] <- "WET"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 12] <- "CRO"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 13] <- "URB"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 14] <- "CVM"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 15] <- "SNO"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 16] <- "BSV"
-df_tower["LC_MCD12Q1_2021"][df_tower["LC_MCD12Q1_2021"] == 17] <- "WAT"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 1]  <- "ENF"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 2]  <- "EBF"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 3]  <- "DNF"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 4]  <- "DBF"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 5]  <- "MF"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 6]  <- "CSH"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 7]  <- "OSH"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 8]  <- "WSA"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 9]  <- "SAV"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 10] <- "GRA"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 11] <- "WET"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 12] <- "CRO"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 13] <- "URB"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 14] <- "CVM"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 15] <- "SNO"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 16] <- "BSV"
+df_tower["LC_MCD12Q1"][df_tower["LC_MCD12Q1"] == 17] <- "WAT"
 
 
 # Get aggregate percentage of pixels at coarser resolution
